@@ -13,11 +13,6 @@ export const loginSchema = joi.object({
     });
 
 
-export const editSchema = joi.object({
-    username:joi.string().required(),
-    tweet:joi.string().max(144).required()
-    });
-
 export const transactionSchema = joi.object({
     value:joi.number().positive().required(),
     description:joi.string().required(),
