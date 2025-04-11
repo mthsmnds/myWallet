@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { db } from "../database.js";
-import { transactionSchema } from "../schemas.js";
+import { db } from "../config/database.js";
+import { transactionSchema } from "../schemas/transactionSchema.js"
 
 export async function getTransactionsID(req, res) {
     const id = req.params.id;
