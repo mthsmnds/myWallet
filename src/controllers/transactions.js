@@ -84,12 +84,14 @@ export async function editTransaction(req, res) {
 
     try {
         const session = await db.collection("sessions").findOne({ token });
-        console.log("Session userId: ", session.userId)
         if (!session) return res.sendStatus(401);
 
         const transaction = await db.collection("transactions").findOne({ _id: new ObjectId(id) });
         if (!transaction) return res.status(404).send("Transação não encontrada");
-        if (transaction.userId !== session.userId.toString()) return res.sendStatus(401);
+
+        if (String(transaction.userId) !== String(session.userId)) {
+            return res.sendStatus(401);
+        }
 
         await db.collection("transactions").updateOne(
             { _id: new ObjectId(id) },
@@ -117,7 +119,9 @@ export async function deleteTransaction(req, res) {
 
         const transaction = await db.collection("transactions").findOne({ _id: new ObjectId(id) });
         if (!transaction) return res.status(404).send("Transação não encontrada");
-        if (transaction.userId !== session.userId) return res.sendStatus(401);
+        if (String(transaction.userId) !== String(session.userId)) {
+            return res.sendStatus(401);
+        }
 
         await db.collection("transactions").deleteOne({ _id: new ObjectId(id) });
         return res.sendStatus(204);
