@@ -1,16 +1,12 @@
 import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
+import jwt from "jsonwebtoken";
 import { db } from "../config/database.js";
-import { loginSchema, signUpSchema } from "../schemas/userSchemas.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export async function signUp(req, res) {
     const signUp = req.body;
-    const validate = signUpSchema.validate(signUp, { abortEarly: false });
-
-    if (validate.error) {
-        const errMessage = validate.error.details.map(detail => detail.message);
-        return res.status(422).send(errMessage)
-    }
 
     try {
         const existingUser = await db.collection("users").findOne({ email: signUp.email });
@@ -31,13 +27,6 @@ export async function signUp(req, res) {
 export async function signIn(req, res) {
     const login = req.body
 
-    const validate = loginSchema.validate(login, { abortEarly: false });
-
-    if (validate.error) {
-        const errMessage = validate.error.details.map(detail => detail.message);
-        return res.status(422).send(errMessage);
-    }
-
     try {
         const user = await db.collection("users").findOne({ email: login.email });
         if (!user) {
@@ -46,13 +35,18 @@ export async function signIn(req, res) {
         if (user && bcrypt.compareSync(login.password, user.password)) {
             console.log("Usuário logado com sucesso.");
 
-            const token = uuid();
-            const session = {
-                token,
-                userId: user._id
-            };
+            const token = jwt.sign(
+                {userId: user._id }, 
+                process.env.JWT_SECRET,
+                {expiresIn: 86400});
 
-            await db.collection("sessions").insertOne(session);
+
+            // const session = {
+            //     token,
+            //     userId: user._id
+            // };
+
+            // await db.collection("sessions").insertOne(session);
 
             return res.send(token);
         }
