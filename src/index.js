@@ -13,7 +13,7 @@ app.use(json());
 app.use(authRouter);
 app.use(transactionRouter);
 
-const porta = process.env.PORTA || 5000;
+const porta = process.env.PORT || 5000;
 app.listen(porta, () => {
     console.log(`Server rodando na porta ${porta}`);
 })
