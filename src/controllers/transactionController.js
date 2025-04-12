@@ -1,6 +1,25 @@
 import { ObjectId } from "mongodb";
 import { db } from "../config/database.js";
 
+export async function getTransactions(req, res) {
+    const page = req.query.page || 1;
+    const limit = 10;
+    const skip = (page -1) * limit;
+
+    try {
+        const receipt = await db.collection("transactions")
+        .find()
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+    
+        return res.send(receipt);
+
+    } catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+
 export async function getTransactionsID(req, res) {
     const id = req.params.id;
 
@@ -13,16 +32,6 @@ export async function getTransactionsID(req, res) {
         return res.send(receipt);
     } catch (error) {
         return res.sendStatus(500);
-    }
-}
-
-export async function getTransactions(req, res) {
-    try {
-        const receipt = await db.collection("transactions").find().toArray();
-        return res.send(receipt);
-
-    } catch (error) {
-        return res.status(500).send(error.message)
     }
 }
 
