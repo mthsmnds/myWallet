@@ -1,1 +1,1 @@
-RENDER DEPLY: https://mywallet-yfiv.onrender.com
+RENDER DEPLOY: https://mywallet-yfiv.onrender.com
